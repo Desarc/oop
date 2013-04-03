@@ -1,0 +1,6 @@
+<eObjectEntry  timestamp='1359652476429' resUri='platform:/resource/ovinger/tests/oving3.jex' fragmentId='//@requirements.0/@requirements.1' key='test run status' value='true'/>
+<eObjectEntry  timestamp='1359652476436' resUri='platform:/resource/ovinger/tests/oving3.jex' fragmentId='//@requirements.0/@requirements.3' key='test run status' value='true'/>
+<eObjectEntry  timestamp='1359652476444' resUri='platform:/resource/ovinger/tests/oving3.jex' fragmentId='//@requirements.1/@requirements.1' key='test run status' value='true'/>
+<eObjectEntry  timestamp='1359652476450' resUri='platform:/resource/ovinger/tests/oving3.jex' fragmentId='//@requirements.2/@requirements.1' key='test run status' value='true'/>
+<eObjectEntry  timestamp='1359652476456' resUri='platform:/resource/ovinger/tests/oving3.jex' fragmentId='//@requirements.2/@requirements.3' key='test run status' value='true'/>
+<eObjectEntry  timestamp='1359652476462' resUri='platform:/resource/ovinger/tests/oving3.jex' fragmentId='//@requirements.2/@requirements.5' key='test run status' value='true'/>
