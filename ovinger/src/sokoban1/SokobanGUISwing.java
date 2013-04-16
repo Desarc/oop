@@ -2,9 +2,12 @@ package sokoban1;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,7 +24,7 @@ import javax.swing.KeyStroke;
 
 
 @SuppressWarnings("serial")
-public class SokobanGUISwing extends JPanel implements SokobanGUI, ActionListener {
+public class SokobanGUISwing extends JPanel implements SokobanGUI, ActionListener, MouseListener {
 	
 	final String filepath = "/home/desarc/projects/ovinger/resources/sokoban/";
 	final String wallImage = filepath+"wall16x16.png";
@@ -33,6 +36,7 @@ public class SokobanGUISwing extends JPanel implements SokobanGUI, ActionListene
 	final String targetImage = filepath+"target16x16.png";
 	
 	final String UNDO = "undo";
+	final String REDO = "redo";
 	
 	final int tileSize = 16;
 	
@@ -68,10 +72,14 @@ public class SokobanGUISwing extends JPanel implements SokobanGUI, ActionListene
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "right");
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "up");
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "down");
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_U, 0), "undo");
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "redo");
         getActionMap().put("left", new MoveAction(Dir.LEFT));
         getActionMap().put("right", new MoveAction(Dir.RIGHT));
         getActionMap().put("up", new MoveAction(Dir.UP));
         getActionMap().put("down", new MoveAction(Dir.DOWN));
+        getActionMap().put("undo", new SokobanAction(UNDO));
+        getActionMap().put("redo", new SokobanAction(REDO));
         
 		this.core = core;
 		
@@ -257,6 +265,7 @@ public class SokobanGUISwing extends JPanel implements SokobanGUI, ActionListene
 				Tile tile = levelGrid.get(i).get(j);
 				ImageIcon tileImage = getImage(tile);
 				JLabel imageLabel = new JLabel(tileImage);
+				imageLabel.addMouseListener(this);
 				line.add(imageLabel);
 				c.gridx = j+panelLevelStartX;
 				c.gridy = i+panelLevelStartY;
@@ -364,6 +373,24 @@ public class SokobanGUISwing extends JPanel implements SokobanGUI, ActionListene
 			core.move(dir);
 		}
 	}
+	
+	class SokobanAction extends AbstractAction {
+		
+		String action;
+		
+		public SokobanAction(String action) {
+			this.action = action;
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			if (action.equals(UNDO)) {
+				core.undoLastMove();
+			}
+			else if (action.equals(REDO)) {
+				core.redoLastMove();
+			}
+		}
+	}
 
 	class ReplayTask extends TimerTask {
 
@@ -390,6 +417,50 @@ public class SokobanGUISwing extends JPanel implements SokobanGUI, ActionListene
 
 	public void labelChanged() {
 		updateLabels();
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		try {
+			JLabel tile = (JLabel)e.getSource();
+			int x = -1, y = -1;
+			for (int j = 0; j < levelGraphics.size(); j++) {
+				ArrayList<JLabel> line = levelGraphics.get(j);
+				for (int i = 0; i < line.size(); i++) {
+					JLabel comp = line.get(i);
+					if (tile.equals(comp)) {
+						x = i;
+						y = j;
+						break;
+					}
+				}
+			}
+			core.clickToMove(x, y);
+		} catch(ClassCastException cce) {}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

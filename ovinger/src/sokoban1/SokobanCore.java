@@ -1,7 +1,10 @@
 package sokoban1;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import sokoban1.SokobanGUISwing.ReplayTask;
 import sokoban2.Move;
 
 public class SokobanCore {
@@ -12,6 +15,7 @@ public class SokobanCore {
 	
 	private ArrayList<Dir> path;
 	private String previousMoves;
+	private ArrayList<Dir> undoneMoves;
 	
 	private int currentLevel = 7;
 	
@@ -22,6 +26,7 @@ public class SokobanCore {
 	public SokobanCore() {
 		previousMoves = "";
 		path = new ArrayList<Dir>();
+		undoneMoves = new ArrayList<Dir>();
 		replaying = false;
 		playing = true;
 	}
@@ -118,7 +123,8 @@ public class SokobanCore {
 			return;
 		}
 		Dir dir = path.get(path.size()-1);
-		path.remove(path.size()-1);
+		Dir undone = path.remove(path.size()-1);
+		undoneMoves.add(undone);
 		previousMoves = previousMoves.substring(0, previousMoves.length()-1);
 		if (dir == Dir.LEFT) {
 			move(Dir.RIGHT, true);
@@ -138,8 +144,48 @@ public class SokobanCore {
 		}
 	}
 	
+	public void redoLastMove() {
+		if (undoneMoves.size() > 0) {
+			Dir redo = undoneMoves.remove(undoneMoves.size()-1);
+			move(redo, false);
+		}
+	}
+	
+	public void clickToMove(int toX, int toY) {
+		ArrayList<Dir> path = level.findShortestPath(level.getX(), level.getY(), toX, toY);
+		if (path != null) {
+			Timer timer = new Timer();
+			timer.schedule(new MoveTask(0, path), 100);
+		}
+		else {
+		}
+	}
+	
 
 	public int numberOfMoves() {
 		return path.size();
+	}
+	
+	class MoveTask extends TimerTask {
+
+		int n;
+		ArrayList<Dir> path;
+		
+		public MoveTask(int n, ArrayList<Dir> path) {
+			this.n = n;
+			this.path = path;
+		}
+		
+		public void run() {
+			if (n < path.size()) {
+				move(path.get(n));
+				n++;
+				Timer timer = new Timer();
+				timer.schedule(new MoveTask(n, path), 100);
+			}
+			else {
+				setReplaying(false);
+			}
+		}
 	}
 }
